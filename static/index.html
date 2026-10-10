@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>台股刚转强筛选器</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="extras.css">
+</head>
+<body>
+  <div class="shell">
+    <header><div><div class="eyebrow">TAIWAN MARKET · DAILY SCREENING</div><h1>台股刚转强筛选器</h1><p>从上市、上柜股票中，寻找多周期刚转强的股票。</p></div><div class="header-note"><span class="live-dot"></span><strong id="runtimeLabel">载入中</strong><small id="runtimeDetail">正在读取资料状态</small></div></header>
+    <div class="notice">使用原始价格计算，除权息可能形成假信号；低成交金额股票不会排除，但会显示风险提示。</div>
+    <main>
+      <aside class="panel controls">
+        <div class="panel-title"><span>01</span><h2>筛选条件</h2></div>
+        <section><label class="section-label">产业族群</label><div id="categoryChips" class="chips"></div><p class="hint">可以同时选择多个族群</p></section>
+        <section><label class="section-label">筛选模式</label><div id="modeSwitch" class="segmented"><button type="button" class="active" data-mode="strict" aria-pressed="true">严格</button><button type="button" data-mode="loose" aria-pressed="false">宽松</button></div><p id="modeHint" class="hint">严格：只显示所有已启用条件都通过的股票</p></section>
+        <section><label class="section-label">我的策略</label><div class="preset-row"><select id="presetSelect"><option value="default">默认规则</option></select><button id="savePreset">保存当前</button><button id="deletePreset" title="删除当前策略">删除</button></div></section>
+        <section><label class="section-label">可调整规则</label><div class="interactive-rules">
+          <article class="rule-card">
+            <div class="rule-title"><b>均线 · 30分</b></div>
+            <label class="toggle-row"><input id="maOrder" type="checkbox" checked><span>要求 MA5 &gt; 10 &gt; 20 &gt; 60</span></label>
+            <label class="toggle-row"><input id="maRising" type="checkbox" checked><span>要求四条均线连续向上</span></label>
+            <div class="slider-row"><span>连续</span><input id="maRiseBars" type="range" min="1" max="10" value="3"><output>3</output><span>日</span></div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-title"><b>KD金叉 · 30分</b><small>每个周期可分别开关</small></div>
+            <label class="toggle-row"><input id="kd60" type="checkbox" checked><span>60分钟KD</span></label><div class="slider-row"><span>近</span><input id="kd60Lookback" type="range" min="1" max="10" value="3"><output>3</output><span>根</span></div>
+            <label class="toggle-row"><input id="kdDay" type="checkbox" checked><span>日KD</span></label><div class="slider-row"><span>近</span><input id="kdDayLookback" type="range" min="1" max="10" value="3"><output>3</output><span>日</span></div>
+            <label class="toggle-row"><input id="kdMonth" type="checkbox" checked><span>月KD</span></label><div class="slider-row"><span>近</span><input id="kdMonthLookback" type="range" min="1" max="10" value="3"><output>3</output><span>月</span></div>
+          </article>
+          <article class="rule-card"><label class="toggle-row rule-title"><input id="macd" type="checkbox" checked><b>日MACD翻红 · 13.3分</b></label><div class="slider-row"><span>近</span><input id="macdLookback" type="range" min="1" max="10" value="3"><output>3</output><span>日</span></div></article>
+          <article class="rule-card"><label class="toggle-row rule-title"><input id="rsi" type="checkbox" checked><b>日RSI14 · 13.3分</b></label><div class="slider-row"><span>低于</span><input id="rsiMax" type="range" min="30" max="75" value="50"><output>50</output><span>且向上</span></div></article>
+          <article class="rule-card"><label class="toggle-row rule-title"><input id="dmi" type="checkbox" checked><b>日DMI金叉 · 13.3分</b></label><div class="slider-row"><span>近</span><input id="dmiLookback" type="range" min="1" max="10" value="3"><output>3</output><span>日</span></div></article>
+        </div></section>
+        <section><button id="manage" class="secondary">管理股票名单 <span id="listCount">—</span></button><p class="hint">可新增、删除并指定产业族群</p></section>
+        <button id="scan" class="primary"><span>开始扫描</span><b>→</b></button><p class="privacy">手动更新 · 不保存扫描历史 · 仅使用已完成K线</p>
+        <p id="sourceNote" class="source-note">正在读取资料说明。</p>
+      </aside>
+      <section class="workspace">
+        <div class="summary">
+          <div class="metric accent"><span>本次扫描</span><strong id="total">—</strong><small>档股票</small></div>
+          <div class="metric"><span>完全符合</span><strong id="qualified">—</strong><small>启用条件全部通过</small></div>
+          <div class="metric"><span>接近符合</span><strong id="near">—</strong><small>最多显示5档</small></div>
+          <div class="metric"><span>异常</span><strong id="errors">—</strong><small>资料缺失或超时</small></div>
+        </div>
+        <div class="panel results-panel">
+          <div class="results-head"><div><div class="eyebrow">SCREENING RESULTS</div><h2>筛选结果</h2></div><div class="actions"><input id="search" placeholder="搜索代码或名称" disabled></div></div>
+          <div id="status" class="empty-state"><div class="radar"><i></i><i></i><i></i><span>—</span></div><h3>准备扫描盘后资料</h3><p>完全符合优先显示，其后是综合评分最高的接近符合股票。</p></div>
+          <div id="tableWrap" class="result-wrap hidden"><div id="rows" class="result-cards"></div></div>
+        </div>
+      </section>
+    </main>
+    <footer><span>数据仅供研究，不构成投资建议</span><span id="timestamp">尚未扫描</span></footer>
+  </div>
+  <dialog id="stockDialog">
+    <div class="dialog-head"><div><div class="eyebrow">WATCHLIST</div><h2>管理股票名单</h2></div><button id="closeDialog" aria-label="关闭">×</button></div>
+    <form id="addStock" class="stock-form"><input id="newCode" inputmode="numeric" maxlength="6" placeholder="股票代码" required><input id="newName" maxlength="30" placeholder="股票名称" required><select id="newMarket"><option>上市</option><option>上柜</option></select><input id="newCategory" maxlength="20" placeholder="产业族群" required><button type="submit">加入</button></form>
+    <div id="stockList" class="stock-list"></div>
+    <div class="dialog-foot"><button id="restoreDefaults" class="secondary">恢复完整名单</button><small>修改仅储存在这个浏览器</small></div>
+  </dialog>
+  <dialog id="presetDialog" class="small-dialog">
+    <div class="dialog-head"><div><div class="eyebrow">STRATEGY</div><h2>保存当前策略</h2></div><button id="closePreset" aria-label="关闭">×</button></div>
+    <form id="presetForm" class="preset-form"><label>策略名称<input id="presetName" maxlength="30" placeholder="例如：宽松观察" required></label><button type="submit">保存</button></form>
+  </dialog>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body></html>
