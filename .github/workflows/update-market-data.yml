@@ -1,0 +1,44 @@
+name: 更新台股资料并发布网页
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 台湾时间周一至周五 16:30，等待交易所盘后资料完整。
+    - cron: "30 8 * * 1-5"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 取得程式
+        uses: actions/checkout@v4
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 计算上市上柜技术指标
+        run: python scripts/update_static_data.py --workers 6 --minimum-success-rate 0.75
+      - name: 运行检查
+        run: python -m unittest discover -s tests -v
+      - name: 准备 GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: 上传网页
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: static
+      - name: 发布网页
+        id: deployment
+        uses: actions/deploy-pages@v4
